@@ -23,6 +23,13 @@
       <h1 class="app-title">STOPWATCH</h1>
 
       <div class="header-actions">
+        <button id="progress-btn" class="icon-btn" title="View Daily Progress" aria-label="View Daily Progress">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </button>
         <button id="fullscreen-btn" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
           <svg id="fullscreen-icon" class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
@@ -44,6 +51,59 @@
       <button id="reset-btn" class="btn secondary-btn">RESET</button>
     </footer>
 
+  </div>
+
+  <!-- Daily Progress Modal -->
+  <div id="progress-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 class="modal-title">DAILY PROGRESS</h2>
+        <button id="modal-close-btn" class="icon-btn close-btn" aria-label="Close modal">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Summary Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">TODAY</span>
+            <span id="stat-today-time" class="stat-value">0m</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">THIS WEEK</span>
+            <span id="stat-week-time" class="stat-value">0m</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">SESSIONS</span>
+            <span id="stat-total-runs" class="stat-value">0</span>
+          </div>
+        </div>
+
+        <!-- 7-Day Chart -->
+        <div class="chart-section">
+          <div class="chart-header">
+            <span class="section-subtitle">LAST 7 DAYS FOCUS TIME</span>
+            <span id="chart-max-label" class="chart-max-tag"></span>
+          </div>
+          <div id="chart-container" class="chart-container"></div>
+        </div>
+
+        <!-- Session Logs -->
+        <div class="history-section">
+          <div class="history-header">
+            <span class="section-subtitle">RECENT SESSIONS</span>
+            <button id="clear-history-btn" class="text-btn danger-text">Clear History</button>
+          </div>
+          <div id="runs-list-container" class="runs-list-container">
+            <ul id="runs-list" class="runs-list"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="/src/main.js"></script>

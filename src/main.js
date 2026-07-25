@@ -1,8 +1,9 @@
 // Minimalist Stopwatch Main Client Application
 import { StopwatchEngine } from './stopwatch.js';
+import { saveRun, getRuns, clearRuns, getSummaryStats, get7DayChartData } from './storage.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // DOM Elements
+  // DOM Elements - Timer & Header Controls
   const timeMain = document.getElementById('time-main');
   const timeSub = document.getElementById('time-sub');
 
@@ -10,6 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetBtn = document.getElementById('reset-btn');
   const fullscreenBtn = document.getElementById('fullscreen-btn');
   const fullscreenIcon = document.getElementById('fullscreen-icon');
+  const progressBtn = document.getElementById('progress-btn');
+
+  // DOM Elements - Modal & Progress UI
+  const progressModal = document.getElementById('progress-modal');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
+  const clearHistoryBtn = document.getElementById('clear-history-btn');
+
+  const statTodayTime = document.getElementById('stat-today-time');
+  const statWeekTime = document.getElementById('stat-week-time');
+  const statTotalRuns = document.getElementById('stat-total-runs');
+
+  const chartContainer = document.getElementById('chart-container');
+  const chartMaxLabel = document.getElementById('chart-max-label');
+  const runsList = document.getElementById('runs-list');
 
   // Initialize Stopwatch Engine
   const stopwatch = new StopwatchEngine({
@@ -33,8 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Reset Button
+  // Reset Button — Save run if duration >= 1 second
   resetBtn.addEventListener('click', () => {
+    const durationMs = stopwatch.elapsedMs;
+    if (durationMs >= 1000) {
+      saveRun(durationMs);
+    }
     stopwatch.reset();
   });
 
@@ -74,6 +93,88 @@ document.addEventListener('DOMContentLoaded', () => {
       // stopped
       startBtn.textContent = 'START';
       startBtn.className = 'btn primary-btn';
+    }
+  }
+
+  // Modal Open / Close Logic
+  progressBtn.addEventListener('click', openModal);
+  modalCloseBtn.addEventListener('click', closeModal);
+
+  progressModal.addEventListener('click', (e) => {
+    if (e.target === progressModal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && progressModal.classList.contains('active')) {
+      closeModal();
+    }
+  });
+
+  clearHistoryBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear all session history?')) {
+      clearRuns();
+      renderProgressData();
+    }
+  });
+
+  function openModal() {
+    renderProgressData();
+    progressModal.classList.add('active');
+    progressModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeModal() {
+    progressModal.classList.remove('active');
+    progressModal.setAttribute('aria-hidden', 'true');
+  }
+
+  function renderProgressData() {
+    // 1. Render Summary Stats
+    const stats = getSummaryStats();
+    statTodayTime.textContent = stats.todayFormatted;
+    statWeekTime.textContent = stats.weekFormatted;
+    statTotalRuns.textContent = stats.totalRuns;
+
+    // 2. Render 7-Day Chart
+    const chartData = get7DayChartData();
+    chartMaxLabel.textContent = `MAX: ${chartData.maxFormatted}`;
+    
+    chartContainer.innerHTML = '';
+    chartData.bars.forEach(bar => {
+      const barWrapper = document.createElement('div');
+      barWrapper.className = `chart-bar-wrapper${bar.isToday ? ' today' : ''}`;
+
+      barWrapper.innerHTML = `
+        <span class="chart-bar-val">${bar.formattedTime}</span>
+        <div class="chart-bar-track">
+          <div class="chart-bar-fill" style="height: ${bar.percent}%;"></div>
+        </div>
+        <span class="chart-bar-label">${bar.dayLabel}</span>
+      `;
+      chartContainer.appendChild(barWrapper);
+    });
+
+    // 3. Render Session History List
+    const runs = getRuns();
+    runsList.innerHTML = '';
+
+    if (runs.length === 0) {
+      runsList.innerHTML = '<li class="empty-runs">No focus sessions recorded yet.</li>';
+    } else {
+      runs.slice(0, 30).forEach(run => {
+        const li = document.createElement('li');
+        li.className = 'run-item';
+        li.innerHTML = `
+          <div>
+            <span class="run-date">${run.dateStr}</span>
+            <span class="run-time">${run.timeOfDay}</span>
+          </div>
+          <span class="run-duration">${run.formattedDuration}</span>
+        `;
+        runsList.appendChild(li);
+      });
     }
   }
 
