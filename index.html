@@ -34,6 +34,19 @@
         <span class="rivet right"></span>
       </div>
 
+      <!-- Compact Mode Lever Switch integrated into header -->
+      <div class="header-lever-wrapper">
+        <span class="lever-label timer-label active">TIMER</span>
+        <div class="lever-track" id="mode-lever-track" role="button" aria-label="Toggle Mode" tabindex="0">
+          <div class="lever-slot">
+            <div class="lever-arm" id="mode-lever-arm">
+              <div class="lever-knob"></div>
+            </div>
+          </div>
+        </div>
+        <span class="lever-label stopwatch-label">STOPWATCH</span>
+      </div>
+
       <div class="top-controls">
         <button id="mute-btn" class="icon-btn brass-btn" title="Toggle Sound" aria-label="Toggle Sound">
           <svg id="mute-icon" class="btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -56,20 +69,7 @@
     <!-- Main Enclosure Body -->
     <main class="main-enclosure">
       
-      <!-- Mode Lever Switch Section -->
-      <section class="lever-section">
-        <span class="lever-label timer-label active">TIMER</span>
-        <div class="lever-track" id="mode-lever-track" role="button" aria-label="Toggle Mode" tabindex="0">
-          <div class="lever-slot">
-            <div class="lever-arm" id="mode-lever-arm">
-              <div class="lever-knob"></div>
-            </div>
-          </div>
-        </div>
-        <span class="lever-label stopwatch-label">STOPWATCH</span>
-      </section>
-
-      <!-- Main Display & Progress Ring -->
+      <!-- Dominant Main Display & Progress Ring -->
       <section class="display-section">
         <div class="dial-display-wrapper">
           
@@ -80,11 +80,6 @@
           <svg class="progress-ring" viewBox="0 0 240 240">
             <circle class="ring-track" cx="120" cy="120" r="102"></circle>
             <circle id="ring-progress" class="ring-fill" cx="120" cy="120" r="102"></circle>
-            
-            <!-- Dial Ticks around display -->
-            <g class="ring-ticks" transform="translate(120, 120)">
-              <!-- Rendered via CSS/JS -->
-            </g>
           </svg>
 
           <!-- Central Time Readout -->
@@ -106,9 +101,7 @@
         </div>
 
         <div class="dial-outer-casing">
-          <div class="dial-ticks-ring"></div>
-          
-          <div id="dial-knob" class="dial-knob" role="slider" aria-label="Timer Knob" tabindex="0">
+          <div class="dial-knob" id="dial-knob" role="slider" aria-label="Timer Knob" tabindex="0">
             <div class="knob-cap">
               <div class="knob-indicator"></div>
               <div class="knob-brass-center">
@@ -129,24 +122,17 @@
           </span>
         </button>
 
+        <button id="restart-same-btn" class="mechanical-btn restart-btn hidden">
+          <span class="btn-plate">
+            <span>↻ RESTART SAME</span>
+          </span>
+        </button>
+
         <button id="reset-btn" class="mechanical-btn secondary-btn">
           <span class="btn-plate">
             <span>RESET</span>
           </span>
         </button>
-      </section>
-
-      <!-- Completion Banner (Hidden by default) -->
-      <section id="completion-banner" class="completion-banner hidden">
-        <div class="banner-content">
-          <div class="bell-animation-icon">🔔</div>
-          <div class="banner-text">SESSION COMPLETE!</div>
-          <button id="restart-same-btn" class="mechanical-btn restart-btn">
-            <span class="btn-plate">
-              <span>↻ RESTART SAME DURATION</span>
-            </span>
-          </button>
-        </div>
       </section>
 
     </main>

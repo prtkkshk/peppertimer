@@ -65,12 +65,12 @@ html, body {
 
 .app-container {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   height: 100%;
-  max-height: 900px;
+  max-height: 920px;
   display: flex;
   flex-direction: column;
-  padding: 16px;
+  padding: 12px 16px;
   position: relative;
 }
 
@@ -79,17 +79,18 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  gap: 8px;
 }
 
 .brand-plate {
   background: linear-gradient(180deg, #d9c5a3 0%, #b39b72 100%);
   border: 2px solid var(--brass-border);
   border-radius: 4px;
-  padding: 4px 12px;
+  padding: 4px 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   position: relative;
 }
@@ -103,22 +104,88 @@ html, body {
 .brand-title {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: 0.95rem;
-  letter-spacing: 2px;
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
   color: #3b2812;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .brand-sub {
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   letter-spacing: 1px;
   color: #594125;
 }
 
+/* Header Integrated Compact Lever Switch */
+.header-lever-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(45, 30, 15, 0.12);
+  border: 1px solid rgba(120, 90, 45, 0.35);
+  border-radius: 20px;
+  padding: 3px 8px;
+}
+
+.lever-label {
+  font-family: var(--font-serif);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  transition: color 0.25s ease;
+  cursor: pointer;
+}
+
+.lever-label.active {
+  color: #3b2308;
+  text-shadow: 0 0 1px rgba(212, 167, 66, 0.4);
+}
+
+.lever-track {
+  width: 50px;
+  height: 24px;
+  background: linear-gradient(180deg, #1f1812 0%, #3a2e22 100%);
+  border: 2px solid var(--brass-border);
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.9);
+  padding: 1px;
+  cursor: pointer;
+  position: relative;
+}
+
+.lever-slot {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.lever-arm {
+  width: 20px;
+  height: 18px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lever-knob {
+  width: 20px;
+  height: 18px;
+  border-radius: 9px;
+  background: radial-gradient(circle at 35% 35%, #f2d488 0%, #a67c29 70%, #573f0f 100%);
+  border: 1px solid var(--brass-border);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.7);
+}
+
+.lever-track.stopwatch-active .lever-arm {
+  transform: translateX(26px);
+}
+
 /* Rivets */
 .rivet {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #e0c896, #5c431d);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -126,13 +193,13 @@ html, body {
 
 .top-controls {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* Brass Icon Buttons */
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #e8d097 0%, #997424 100%);
   border: 2px solid var(--brass-border);
@@ -151,8 +218,8 @@ html, body {
 }
 
 .btn-svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 /* Main Enclosure Box */
@@ -165,7 +232,7 @@ html, body {
     0 16px 32px rgba(0,0,0,0.8),
     inset 0 2px 4px rgba(255,255,255,0.5),
     inset 0 -4px 8px rgba(0,0,0,0.3);
-  padding: 20px 16px;
+  padding: 16px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -174,85 +241,18 @@ html, body {
   overflow: hidden;
 }
 
-/* Mode Lever Switch Section */
-.lever-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  width: 100%;
-  background: rgba(45, 30, 15, 0.08);
-  border: 1px solid rgba(120, 90, 45, 0.3);
-  border-radius: 30px;
-  padding: 8px 16px;
-}
-
-.lever-label {
-  font-family: var(--font-serif);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: var(--text-muted);
-  transition: color 0.25s ease;
-}
-
-.lever-label.active {
-  color: #3b2308;
-  text-shadow: 0 0 1px rgba(212, 167, 66, 0.4);
-}
-
-.lever-track {
-  width: 70px;
-  height: 32px;
-  background: linear-gradient(180deg, #1f1812 0%, #3a2e22 100%);
-  border: 2px solid var(--brass-border);
-  border-radius: 16px;
-  box-shadow: inset 0 3px 6px rgba(0,0,0,0.9);
-  padding: 2px;
-  cursor: pointer;
-  position: relative;
-}
-
-.lever-slot {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-.lever-arm {
-  width: 28px;
-  height: 24px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.lever-knob {
-  width: 28px;
-  height: 24px;
-  border-radius: 12px;
-  background: radial-gradient(circle at 35% 35%, #f2d488 0%, #a67c29 70%, #573f0f 100%);
-  border: 1px solid var(--brass-border);
-  box-shadow: 0 3px 5px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.7);
-}
-
-/* Lever state: stopwatch (right) */
-.lever-track.stopwatch-active .lever-arm {
-  transform: translateX(38px);
-}
-
-/* Display Section */
+/* Dominant Main Display Section */
 .display-section {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 12px 0;
+  margin: 8px 0;
+  width: 100%;
 }
 
 .dial-display-wrapper {
-  width: 220px;
-  height: 220px;
+  width: 250px;
+  height: 250px;
   position: relative;
   display: flex;
   justify-content: center;
@@ -261,19 +261,19 @@ html, body {
 
 .gear-backdrop {
   position: absolute;
-  width: 240px;
-  height: 240px;
+  inset: -10px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(168, 120, 45, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168, 120, 45, 0.18) 0%, transparent 70%);
   pointer-events: none;
 }
 
-/* Circular SVG Progress Ring */
+/* Circular SVG Progress Ring (Centered SVG scaled cleanly) */
 .progress-ring {
-  width: 220px;
-  height: 220px;
+  width: 100%;
+  height: 100%;
   transform: rotate(-90deg);
   position: absolute;
+  inset: 0;
 }
 
 .ring-track {
@@ -284,7 +284,6 @@ html, body {
 
 .ring-fill {
   fill: none;
-  stroke: url(#brass-gradient);
   stroke: #a8582d;
   stroke-dasharray: 641; /* 2 * PI * 102 */
   stroke-dashoffset: 0;
@@ -293,14 +292,14 @@ html, body {
   transition: stroke-dashoffset 0.2s linear;
 }
 
-/* Display Readout Box */
+/* Central Display Readout Box */
 .time-readout-container {
-  width: 160px;
-  height: 160px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   background: radial-gradient(circle at 40% 40%, var(--display-bg) 0%, #ecdcb9 100%);
   border: 4px solid var(--brass-mid);
-  box-shadow: var(--display-screen-shadow), 0 0 12px rgba(0,0,0,0.15);
+  box-shadow: var(--display-screen-shadow), 0 0 14px rgba(0,0,0,0.18);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -310,18 +309,30 @@ html, body {
 
 .time-display {
   font-family: var(--font-typewriter);
-  font-size: 2.3rem;
+  font-size: 2.6rem;
   font-weight: 700;
   letter-spacing: -1px;
   color: #2b1806;
   text-shadow: 0 1px 1px rgba(255,255,255,0.6);
+  text-align: center;
 }
 
 .mode-subtext {
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   letter-spacing: 2px;
+  font-weight: 700;
   color: #735436;
   margin-top: 4px;
+}
+
+.mode-subtext.time-over {
+  color: #a82e1c;
+  animation: pulseGlow 1s ease infinite alternate;
+}
+
+@keyframes pulseGlow {
+  from { opacity: 0.7; }
+  to { opacity: 1; transform: scale(1.05); }
 }
 
 /* Rotating Dial Knob Section */
@@ -329,7 +340,7 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .dial-instructions {
@@ -342,14 +353,14 @@ html, body {
 }
 
 .rotate-hint-icon {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   color: #8c6434;
 }
 
 .dial-outer-casing {
-  width: 170px;
-  height: 170px;
+  width: 155px;
+  height: 155px;
   border-radius: 50%;
   background: radial-gradient(circle at 40% 40%, #d4bf9c 0%, #8c734b 100%);
   border: 3px solid var(--brass-border);
@@ -361,8 +372,8 @@ html, body {
 }
 
 .dial-knob {
-  width: 136px;
-  height: 136px;
+  width: 125px;
+  height: 125px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #423528 0%, #1f1812 100%);
   border: 3px solid #6b5235;
@@ -396,17 +407,17 @@ html, body {
 
 .knob-indicator {
   position: absolute;
-  top: 10px;
+  top: 8px;
   width: 5px;
-  height: 22px;
+  height: 20px;
   background: linear-gradient(180deg, #f5d77f 0%, #a87920 100%);
   border-radius: 3px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
 .knob-brass-center {
-  width: 60px;
-  height: 60px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #f2d283 0%, #8a641a 100%);
   border: 2px solid var(--brass-border);
@@ -424,7 +435,6 @@ html, body {
   color: #38240a;
 }
 
-/* Ridges around outer dial edge */
 .knob-ridges {
   position: absolute;
   inset: 0;
@@ -436,9 +446,11 @@ html, body {
 /* Actions Section Buttons */
 .actions-section {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
   justify-content: center;
+  align-items: center;
+  margin-top: 4px;
 }
 
 .mechanical-btn {
@@ -449,13 +461,17 @@ html, body {
   outline: none;
 }
 
+.mechanical-btn.hidden {
+  display: none !important;
+}
+
 .btn-plate {
   display: block;
-  padding: 12px 28px;
+  padding: 10px 24px;
   border-radius: 12px;
   font-family: var(--font-typewriter);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
   letter-spacing: 1.5px;
   border: 2px solid var(--brass-border);
   box-shadow: 
@@ -485,55 +501,6 @@ html, body {
 .mechanical-btn:active .btn-plate {
   transform: translateY(3px);
   box-shadow: 0 1px 2px rgba(0,0,0,0.7), inset 0 2px 4px rgba(0,0,0,0.5);
-}
-
-/* Completion Banner */
-.completion-banner {
-  position: absolute;
-  inset: 0;
-  background: rgba(26, 20, 16, 0.92);
-  backdrop-filter: blur(4px);
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-  animation: fadeIn 0.3s ease;
-}
-
-.completion-banner.hidden {
-  display: none;
-}
-
-.banner-content {
-  background: linear-gradient(165deg, var(--enclosure-base) 0%, var(--enclosure-dark) 100%);
-  border: 3px solid var(--brass-mid);
-  border-radius: 20px;
-  padding: 28px 24px;
-  text-align: center;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.8);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.bell-animation-icon {
-  font-size: 3rem;
-  animation: ringBell 0.6s ease infinite alternate;
-}
-
-@keyframes ringBell {
-  0% { transform: rotate(-15deg); }
-  100% { transform: rotate(15deg); }
-}
-
-.banner-text {
-  font-family: var(--font-serif);
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: 2px;
-  color: #4a2d0d;
 }
 
 /* History Modal Backdrop */
@@ -568,7 +535,7 @@ html, body {
 }
 
 .modal-header {
-  padding: 16px;
+  padding: 14px 16px;
   border-bottom: 2px solid var(--brass-mid);
   display: flex;
   justify-content: space-between;
@@ -579,7 +546,7 @@ html, body {
 .modal-title {
   font-family: var(--font-serif);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
   letter-spacing: 1.5px;
   color: #3b2812;
 }
@@ -596,21 +563,21 @@ html, body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 /* Stats Summary */
 .stats-summary-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 10px;
 }
 
 .stat-card {
   background: var(--display-bg);
   border: 2px solid var(--brass-mid);
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -618,16 +585,16 @@ html, body {
 }
 
 .stat-label {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   letter-spacing: 1px;
   color: var(--text-muted);
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #2b1806;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 /* 7-Day Bar Chart */
@@ -635,15 +602,15 @@ html, body {
   background: var(--display-bg);
   border: 2px solid var(--brass-mid);
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px;
   box-shadow: var(--display-screen-shadow);
 }
 
 .chart-title {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   letter-spacing: 1px;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   text-align: center;
 }
 
@@ -651,9 +618,9 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  height: 120px;
-  padding-top: 10px;
-  gap: 6px;
+  height: 100px;
+  padding-top: 6px;
+  gap: 4px;
 }
 
 .chart-column {
@@ -667,7 +634,7 @@ html, body {
 
 .chart-bar-wrapper {
   width: 100%;
-  height: 80px;
+  height: 70px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -682,13 +649,13 @@ html, body {
 }
 
 .chart-val {
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   color: #4a341e;
   margin-bottom: 2px;
 }
 
 .chart-day {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   color: #5c452e;
   margin-top: 4px;
 }
@@ -697,7 +664,7 @@ html, body {
 .history-list-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .history-list-header {
@@ -726,8 +693,8 @@ html, body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 160px;
+  gap: 6px;
+  max-height: 140px;
   overflow-y: auto;
 }
 
@@ -735,7 +702,7 @@ html, body {
   background: rgba(255,255,255,0.4);
   border: 1px solid rgba(120, 90, 45, 0.2);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -751,68 +718,73 @@ html, body {
   color: #2b1806;
 }
 
-/* Responsive Landscape Layout Adaptation */
-@media (max-height: 600px), (orientation: landscape) and (max-width: 900px) {
+/* ==========================================================================
+   Responsive Mobile & Desktop Landscape Layout (Dominant Display Clock)
+   ========================================================================== */
+@media (max-height: 620px), (orientation: landscape) and (max-width: 950px) {
   .app-container {
-    max-width: 800px;
-    max-height: 100%;
-    padding: 8px 16px;
+    max-width: 920px;
+    height: 100%;
+    padding: 6px 12px;
+  }
+
+  .top-bar {
+    margin-bottom: 6px;
   }
 
   .main-enclosure {
     flex-direction: row;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-around;
-    padding: 12px;
-    gap: 12px;
+    padding: 10px 16px;
+    gap: 16px;
   }
 
-  .lever-section {
-    width: auto;
+  /* Dominant Center Display in Landscape */
+  .display-section {
+    flex: 1.2;
+    margin: 0;
+    justify-content: center;
   }
 
   .dial-display-wrapper {
-    width: 170px;
-    height: 170px;
-  }
-
-  .progress-ring {
-    width: 170px;
-    height: 170px;
-  }
-
-  .ring-track, .ring-fill {
-    cx: 85;
-    cy: 85;
-    r: 75;
-  }
-
-  .ring-fill {
-    stroke-dasharray: 471;
+    width: 220px;
+    height: 220px;
   }
 
   .time-readout-container {
-    width: 125px;
-    height: 125px;
+    width: 160px;
+    height: 160px;
   }
 
   .time-display {
-    font-size: 1.8rem;
+    font-size: 2.3rem;
+  }
+
+  /* Dial & Actions grouped on the side */
+  .dial-section {
+    flex: 1;
   }
 
   .dial-outer-casing {
-    width: 130px;
-    height: 130px;
+    width: 140px;
+    height: 140px;
   }
 
   .dial-knob {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
   }
 
   .actions-section {
-    width: auto;
     flex-direction: column;
+    width: auto;
+    gap: 8px;
+  }
+
+  .btn-plate {
+    padding: 8px 18px;
+    font-size: 0.85rem;
   }
 }
 

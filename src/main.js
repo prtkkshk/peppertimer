@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.getElementById('start-btn');
   const startBtnText = document.getElementById('start-btn-text');
   const resetBtn = document.getElementById('reset-btn');
+  const restartSameBtn = document.getElementById('restart-same-btn');
 
   const modeLeverTrack = document.getElementById('mode-lever-track');
   const timerLabel = document.querySelector('.timer-label');
@@ -28,17 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const historyModal = document.getElementById('history-modal');
   const closeModalBtn = document.getElementById('close-modal-btn');
 
-  const completionBanner = document.getElementById('completion-banner');
-  const restartSameBtn = document.getElementById('restart-same-btn');
-
   const statToday = document.getElementById('stat-today');
   const statWeek = document.getElementById('stat-week');
   const barChart = document.getElementById('bar-chart');
   const historyList = document.getElementById('history-list');
   const clearHistoryBtn = document.getElementById('clear-history-btn');
 
-  // Ring circumference for SVG stroke-dashoffset calculation
-  // Radius = 102 (portrait), 2 * PI * 102 = 640.88
+  // Ring circumference for SVG stroke-dashoffset calculation (r = 102)
   const RING_CIRCUMFERENCE = 640.88;
 
   // Initialize Dial Control
@@ -50,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize Timer Engine
   const timerEngine = new TimerEngine({
-    onTick: ({ mode, displaySeconds, progress, state }) => {
-      updateDisplay(displaySeconds, mode, progress);
+    onTick: ({ mode, displaySeconds, progress, state, isCompleted }) => {
+      updateDisplay(displaySeconds, mode, progress, isCompleted);
     },
     onStateChange: (state) => {
       updateControlsForState(state);
@@ -59,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     onModeChange: (mode) => {
       updateUIForMode(mode);
     },
-    onComplete: (durationSeconds) => {
-      completionBanner.classList.remove('hidden');
+    onComplete: () => {
+      // Handled via onStateChange & onTick
     }
   });
 
@@ -88,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Start / Pause / Resume Button
   startBtn.addEventListener('click', () => {
-    completionBanner.classList.add('hidden');
     if (timerEngine.state === 'stopped') {
       timerEngine.start();
     } else if (timerEngine.state === 'running') {
@@ -101,14 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Reset Button
   resetBtn.addEventListener('click', () => {
     sounds.playButtonClick();
-    completionBanner.classList.add('hidden');
     timerEngine.reset();
   });
 
   // Restart Same Duration Button
   restartSameBtn.addEventListener('click', () => {
     sounds.playButtonClick();
-    completionBanner.classList.add('hidden');
     timerEngine.restartSameDuration();
   });
 
@@ -225,6 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
       timerLabel.classList.add('active');
       stopwatchLabel.classList.remove('active');
       modeSubtext.textContent = 'SET TIMER';
+      modeSubtext.classList.remove('time-over');
       dialSection.style.display = 'flex';
       dial.setDisabled(timerEngine.state !== 'stopped');
     } else {
@@ -233,27 +228,60 @@ document.addEventListener('DOMContentLoaded', () => {
       stopwatchLabel.classList.add('active');
       timerLabel.classList.remove('active');
       modeSubtext.textContent = 'STOPWATCH';
+      modeSubtext.classList.remove('time-over');
       dialSection.style.display = 'none'; // hidden in stopwatch mode
     }
   }
 
-  // Update Controls state (Start / Pause / Resume)
+  // Update Controls state (Start / Pause / Resume / Reset / Restart)
   function updateControlsForState(state) {
     if (state === 'stopped') {
       startBtnText.textContent = 'START';
       dial.setDisabled(false);
+
+      if (timerEngine.isCompleted) {
+        // Timer completed state: remove Reset button, show Restart Same button
+        resetBtn.classList.add('hidden');
+        restartSameBtn.classList.remove('hidden');
+      } else {
+        // Normal stopped state: show Reset button, hide Restart Same button
+        resetBtn.classList.remove('hidden');
+        restartSameBtn.classList.add('hidden');
+      }
     } else if (state === 'running') {
       startBtnText.textContent = 'PAUSE';
       dial.setDisabled(true);
+      resetBtn.classList.remove('hidden');
+      restartSameBtn.classList.add('hidden');
     } else if (state === 'paused') {
       startBtnText.textContent = 'RESUME';
       dial.setDisabled(true);
+      resetBtn.classList.remove('hidden');
+      restartSameBtn.classList.add('hidden');
     }
   }
 
   // Update Main Digital Readout & Ring Progress
-  function updateDisplay(displaySeconds, mode, progress) {
+  function updateDisplay(displaySeconds, mode, progress, isCompleted) {
     timeDisplay.textContent = timerEngine.formatTime(displaySeconds);
+
+    if (isCompleted) {
+      modeSubtext.textContent = 'TIME IS UP!';
+      modeSubtext.classList.add('time-over');
+    } else {
+      modeSubtext.classList.remove('time-over');
+      if (mode === 'timer') {
+        if (timerEngine.state === 'running') {
+          modeSubtext.textContent = 'COUNTING DOWN';
+        } else if (timerEngine.state === 'paused') {
+          modeSubtext.textContent = 'PAUSED';
+        } else {
+          modeSubtext.textContent = 'SET TIMER';
+        }
+      } else {
+        modeSubtext.textContent = 'STOPWATCH';
+      }
+    }
 
     // SVG stroke offset
     const offset = RING_CIRCUMFERENCE * (1 - progress);

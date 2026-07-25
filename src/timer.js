@@ -8,6 +8,7 @@ export class TimerEngine {
 
     this.mode = 'timer'; // 'timer' | 'stopwatch'
     this.state = 'stopped'; // 'stopped' | 'running' | 'paused'
+    this.isCompleted = false; // true when timer just finished 00:00
 
     // Timer settings
     this.targetDurationSeconds = 15 * 60; // default 15 minutes
@@ -41,6 +42,7 @@ export class TimerEngine {
 
   setTargetDuration(seconds) {
     if (this.state !== 'stopped') return;
+    this.isCompleted = false;
     this.targetDurationSeconds = Math.max(1, Math.round(seconds));
     this.remainingSeconds = this.targetDurationSeconds;
     this.notifyTick();
@@ -48,6 +50,8 @@ export class TimerEngine {
 
   start() {
     if (this.state === 'running') return;
+
+    this.isCompleted = false;
 
     if (this.mode === 'timer' && this.remainingSeconds <= 0) {
       this.remainingSeconds = this.targetDurationSeconds;
@@ -90,6 +94,7 @@ export class TimerEngine {
 
   reset() {
     this.state = 'stopped';
+    this.isCompleted = false;
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
@@ -138,6 +143,7 @@ export class TimerEngine {
 
   completeTimer() {
     this.state = 'stopped';
+    this.isCompleted = true;
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
@@ -184,7 +190,8 @@ export class TimerEngine {
         mode: 'timer',
         displaySeconds: displaySec,
         progress,
-        state: this.state
+        state: this.state,
+        isCompleted: this.isCompleted
       });
     } else {
       // Stopwatch
@@ -195,7 +202,8 @@ export class TimerEngine {
         mode: 'stopwatch',
         displaySeconds: displaySec,
         progress,
-        state: this.state
+        state: this.state,
+        isCompleted: false
       });
     }
   }
