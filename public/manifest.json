@@ -1,0 +1,18 @@
+{
+  "name": "Pepper Timer",
+  "short_name": "Pepper Timer",
+  "description": "Vintage-tech mechanical countdown timer and stopwatch for continuous focus.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a1614",
+  "theme_color": "#26211e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
