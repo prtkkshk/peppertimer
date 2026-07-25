@@ -3,184 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pepper Timer</title>
+  <title>Minimal Stopwatch</title>
   
-  <!-- PWA & Mobile Meta Tags -->
+  <!-- PWA Meta Tags -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#292524">
+  <meta name="theme-color" content="#000000">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Pepper Timer">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Stopwatch">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
-  <!-- Google Fonts: Special Elite & Courier Prime -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="/src/style.css">
 </head>
-<body class="vintage-bg">
+<body>
   <div id="app" class="app-container">
     
-    <!-- Top Header / Bar -->
-    <header class="top-bar">
-      <div class="brand-plate">
-        <span class="rivet left"></span>
-        <div class="brand-text">
-          <span class="brand-title">PEPPER TIMER</span>
-          <span class="brand-sub">EST. 1924 &bull; MECHANICAL FOCUS</span>
-        </div>
-        <span class="rivet right"></span>
-      </div>
+    <!-- Top Header Bar -->
+    <header class="top-header">
+      <h1 class="app-title">STOPWATCH</h1>
 
-      <!-- Compact Mode Lever Switch integrated into header -->
-      <div class="header-lever-wrapper">
-        <span class="lever-label timer-label active">TIMER</span>
-        <div class="lever-track" id="mode-lever-track" role="button" aria-label="Toggle Mode" tabindex="0">
-          <div class="lever-slot">
-            <div class="lever-arm" id="mode-lever-arm">
-              <div class="lever-knob"></div>
-            </div>
-          </div>
-        </div>
-        <span class="lever-label stopwatch-label">STOPWATCH</span>
-      </div>
-
-      <div class="top-controls">
-        <button id="mute-btn" class="icon-btn brass-btn" title="Toggle Sound" aria-label="Toggle Sound">
-          <svg id="mute-icon" class="btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-          </svg>
-        </button>
-
-        <button id="history-btn" class="icon-btn brass-btn" title="Focus History & Stats" aria-label="Focus History">
-          <svg class="btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="20" x2="18" y2="10"></line>
-            <line x1="12" y1="20" x2="12" y2="4"></line>
-            <line x1="6" y1="20" x2="6" y2="14"></line>
+      <div class="header-actions">
+        <button id="fullscreen-btn" class="icon-btn" title="Toggle Fullscreen" aria-label="Toggle Fullscreen">
+          <svg id="fullscreen-icon" class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
           </svg>
         </button>
       </div>
     </header>
 
-    <!-- Main Enclosure Body -->
-    <main class="main-enclosure">
-      
-      <!-- Dominant Main Display & Progress Ring -->
-      <section class="display-section">
-        <div class="dial-display-wrapper">
-          
-          <!-- Decorative Gear Accent -->
-          <div class="gear-backdrop"></div>
-
-          <!-- SVG Circular Progress Ring -->
-          <svg class="progress-ring" viewBox="0 0 240 240">
-            <circle class="ring-track" cx="120" cy="120" r="102"></circle>
-            <circle id="ring-progress" class="ring-fill" cx="120" cy="120" r="102"></circle>
-          </svg>
-
-          <!-- Central Time Readout -->
-          <div class="time-readout-container">
-            <div id="time-display" class="time-display">15:00</div>
-            <div id="mode-subtext" class="mode-subtext">SET TIMER</div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- Skeuomorphic Rotating Dial Knob Section (Timer Mode) -->
-      <section id="dial-section" class="dial-section">
-        <div class="dial-instructions">
-          <svg class="rotate-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-          </svg>
-          <span>ROTATE DIAL TO SET DURATION</span>
-        </div>
-
-        <div class="dial-outer-casing">
-          <div class="dial-knob" id="dial-knob" role="slider" aria-label="Timer Knob" tabindex="0">
-            <div class="knob-cap">
-              <div class="knob-indicator"></div>
-              <div class="knob-brass-center">
-                <span class="center-emblem">PEPPER</span>
-              </div>
-            </div>
-            <!-- Ribbed texture around dial edge -->
-            <div class="knob-ridges"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Control Buttons Section -->
-      <section class="actions-section">
-        <button id="start-btn" class="mechanical-btn primary-btn">
-          <span class="btn-plate">
-            <span id="start-btn-text">START</span>
-          </span>
-        </button>
-
-        <button id="restart-same-btn" class="mechanical-btn restart-btn hidden">
-          <span class="btn-plate">
-            <span>↻ RESTART SAME</span>
-          </span>
-        </button>
-
-        <button id="reset-btn" class="mechanical-btn secondary-btn">
-          <span class="btn-plate">
-            <span>RESET</span>
-          </span>
-        </button>
-      </section>
-
+    <!-- Main Central Display -->
+    <main class="main-display">
+      <div class="time-readout">
+        <span id="time-main" class="time-main">00:00:00</span><span id="time-sub" class="time-sub">.0</span>
+      </div>
     </main>
 
-    <!-- History & Analytics Drawer / Modal -->
-    <div id="history-modal" class="modal-backdrop hidden">
-      <div class="modal-card">
-        <header class="modal-header">
-          <div class="modal-title">FOCUS HISTORY & STATS</div>
-          <button id="close-modal-btn" class="close-btn brass-btn" aria-label="Close Modal">&times;</button>
-        </header>
-
-        <div class="modal-body">
-          
-          <!-- Summary Cards -->
-          <div class="stats-summary-grid">
-            <div class="stat-card">
-              <span class="stat-label">TODAY</span>
-              <span id="stat-today" class="stat-value">0m</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-label">THIS WEEK</span>
-              <span id="stat-week" class="stat-value">0m</span>
-            </div>
-          </div>
-
-          <!-- 7-Day Chart -->
-          <div class="chart-container">
-            <div class="chart-title">DAILY FOCUS TIME (MINUTES)</div>
-            <div id="bar-chart" class="bar-chart-grid">
-              <!-- Rendered via JS -->
-            </div>
-          </div>
-
-          <!-- Session List -->
-          <div class="history-list-section">
-            <div class="history-list-header">
-              <span>PAST SESSIONS</span>
-              <button id="clear-history-btn" class="text-btn danger-text">Clear History</button>
-            </div>
-            <ul id="history-list" class="history-list">
-              <!-- Rendered via JS -->
-            </ul>
-          </div>
-
-        </div>
-      </div>
-    </div>
+    <!-- Action Buttons -->
+    <footer class="controls-footer">
+      <button id="start-btn" class="btn primary-btn">START</button>
+      <button id="reset-btn" class="btn secondary-btn">RESET</button>
+    </footer>
 
   </div>
 

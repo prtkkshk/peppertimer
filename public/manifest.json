@@ -1,12 +1,12 @@
 {
-  "name": "Pepper Timer",
-  "short_name": "Pepper Timer",
-  "description": "Vintage-tech mechanical countdown timer and stopwatch for continuous focus.",
+  "name": "Minimal Stopwatch",
+  "short_name": "Stopwatch",
+  "description": "Ultra-minimalist dark mode stopwatch app.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#1a1614",
-  "theme_color": "#26211e",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "/favicon.svg",

@@ -1,299 +1,88 @@
-// Pepper Timer Main Application Entry Point
-import { sounds } from './audio.js';
-import { StorageManager } from './storage.js';
-import { DialControl } from './dial.js';
-import { TimerEngine } from './timer.js';
+// Minimalist Stopwatch Main Client Application
+import { StopwatchEngine } from './stopwatch.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements
-  const timeDisplay = document.getElementById('time-display');
-  const modeSubtext = document.getElementById('mode-subtext');
-  const ringProgress = document.getElementById('ring-progress');
+  const timeMain = document.getElementById('time-main');
+  const timeSub = document.getElementById('time-sub');
 
   const startBtn = document.getElementById('start-btn');
-  const startBtnText = document.getElementById('start-btn-text');
   const resetBtn = document.getElementById('reset-btn');
-  const restartSameBtn = document.getElementById('restart-same-btn');
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+  const fullscreenIcon = document.getElementById('fullscreen-icon');
 
-  const modeLeverTrack = document.getElementById('mode-lever-track');
-  const timerLabel = document.querySelector('.timer-label');
-  const stopwatchLabel = document.querySelector('.stopwatch-label');
-
-  const dialKnobElement = document.getElementById('dial-knob');
-  const dialSection = document.getElementById('dial-section');
-
-  const muteBtn = document.getElementById('mute-btn');
-  const muteIcon = document.getElementById('mute-icon');
-
-  const historyBtn = document.getElementById('history-btn');
-  const historyModal = document.getElementById('history-modal');
-  const closeModalBtn = document.getElementById('close-modal-btn');
-
-  const statToday = document.getElementById('stat-today');
-  const statWeek = document.getElementById('stat-week');
-  const barChart = document.getElementById('bar-chart');
-  const historyList = document.getElementById('history-list');
-  const clearHistoryBtn = document.getElementById('clear-history-btn');
-
-  // Ring circumference for SVG stroke-dashoffset calculation (r = 102)
-  const RING_CIRCUMFERENCE = 640.88;
-
-  // Initialize Dial Control
-  const dial = new DialControl(dialKnobElement, (seconds) => {
-    if (timerEngine.mode === 'timer' && timerEngine.state === 'stopped') {
-      timerEngine.setTargetDuration(seconds);
-    }
-  });
-
-  // Initialize Timer Engine
-  const timerEngine = new TimerEngine({
-    onTick: ({ mode, displaySeconds, progress, state, isCompleted }) => {
-      updateDisplay(displaySeconds, mode, progress, isCompleted);
+  // Initialize Stopwatch Engine
+  const stopwatch = new StopwatchEngine({
+    onTick: ({ formatted, state }) => {
+      timeMain.textContent = formatted.timeStr;
+      timeSub.textContent = formatted.tenthsStr;
     },
     onStateChange: (state) => {
-      updateControlsForState(state);
-    },
-    onModeChange: (mode) => {
-      updateUIForMode(mode);
-    },
-    onComplete: () => {
-      // Handled via onStateChange & onTick
+      updateControls(state);
     }
-  });
-
-  // Set default dial duration to 15 mins
-  dial.setSeconds(15 * 60, false);
-  timerEngine.setTargetDuration(15 * 60);
-
-  // Initialize Mute Button State
-  updateMuteUI();
-
-  // Mode Lever Switch Click
-  const toggleMode = () => {
-    sounds.playLeverClick();
-    const newMode = timerEngine.mode === 'timer' ? 'stopwatch' : 'timer';
-    timerEngine.setMode(newMode);
-  };
-
-  modeLeverTrack.addEventListener('click', toggleMode);
-  timerLabel.addEventListener('click', () => {
-    if (timerEngine.mode !== 'timer') toggleMode();
-  });
-  stopwatchLabel.addEventListener('click', () => {
-    if (timerEngine.mode !== 'stopwatch') toggleMode();
   });
 
   // Start / Pause / Resume Button
   startBtn.addEventListener('click', () => {
-    if (timerEngine.state === 'stopped') {
-      timerEngine.start();
-    } else if (timerEngine.state === 'running') {
-      timerEngine.pause();
-    } else if (timerEngine.state === 'paused') {
-      timerEngine.resume();
+    if (stopwatch.state === 'stopped') {
+      stopwatch.start();
+    } else if (stopwatch.state === 'running') {
+      stopwatch.pause();
+    } else if (stopwatch.state === 'paused') {
+      stopwatch.resume();
     }
   });
 
   // Reset Button
   resetBtn.addEventListener('click', () => {
-    sounds.playButtonClick();
-    timerEngine.reset();
+    stopwatch.reset();
   });
 
-  // Restart Same Duration Button
-  restartSameBtn.addEventListener('click', () => {
-    sounds.playButtonClick();
-    timerEngine.restartSameDuration();
-  });
-
-  // Mute Toggle Button
-  muteBtn.addEventListener('click', () => {
-    sounds.toggleMute();
-    updateMuteUI();
-  });
-
-  function updateMuteUI() {
-    if (sounds.isMuted()) {
-      muteIcon.innerHTML = `
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-        <line x1="23" y1="9" x2="17" y2="15"></line>
-        <line x1="17" y1="9" x2="23" y2="15"></line>
-      `;
-      muteBtn.style.opacity = '0.6';
+  // Fullscreen Toggle
+  fullscreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.log('Fullscreen error:', err.message);
+      });
     } else {
-      muteIcon.innerHTML = `
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-      `;
-      muteBtn.style.opacity = '1';
-    }
-  }
-
-  // History & Stats Modal Events
-  historyBtn.addEventListener('click', () => {
-    sounds.playButtonClick();
-    renderStatsAndHistory();
-    historyModal.classList.remove('hidden');
-  });
-
-  closeModalBtn.addEventListener('click', () => {
-    sounds.playButtonClick();
-    historyModal.classList.add('hidden');
-  });
-
-  historyModal.addEventListener('click', (e) => {
-    if (e.target === historyModal) {
-      historyModal.classList.add('hidden');
-    }
-  });
-
-  clearHistoryBtn.addEventListener('click', () => {
-    if (confirm('Clear all recorded focus session history?')) {
-      sounds.playButtonClick();
-      StorageManager.clearHistory();
-      renderStatsAndHistory();
-    }
-  });
-
-  // Render Stats & Past Sessions
-  function renderStatsAndHistory() {
-    const todaySec = StorageManager.getTodayTotalSeconds();
-    const weekSec = StorageManager.getWeekTotalSeconds();
-
-    statToday.textContent = formatDurationShort(todaySec);
-    statWeek.textContent = formatDurationShort(weekSec);
-
-    // Render 7-day Bar Chart
-    const stats = StorageManager.getDailyStats(7);
-    const maxSec = Math.max(...stats.map(s => s.totalSeconds), 1800); // minimum scale 30 mins
-
-    barChart.innerHTML = stats.map(s => {
-      const heightPercent = Math.min(100, Math.round((s.totalSeconds / maxSec) * 100));
-      const mins = Math.round(s.totalSeconds / 60);
-      return `
-        <div class="chart-column">
-          <span class="chart-val">${mins > 0 ? mins + 'm' : ''}</span>
-          <div class="chart-bar-wrapper">
-            <div class="chart-bar" style="height: ${Math.max(4, heightPercent)}%;"></div>
-          </div>
-          <span class="chart-day">${s.dayLabel}</span>
-        </div>
-      `;
-    }).join('');
-
-    // Render Past Sessions List
-    const history = StorageManager.getHistory();
-    if (history.length === 0) {
-      historyList.innerHTML = '<li class="history-item" style="justify-content:center; color:#7a6045;">No sessions logged yet.</li>';
-    } else {
-      historyList.innerHTML = history.slice(0, 30).map(item => {
-        const d = new Date(item.timestamp);
-        const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        const durStr = formatDurationShort(item.durationSeconds);
-        const modeTag = item.mode === 'stopwatch' ? '⏱️ Stopwatch' : '⏳ Timer';
-        return `
-          <li class="history-item">
-            <span class="history-date">${dateStr} (${modeTag})</span>
-            <span class="history-duration">${durStr}</span>
-          </li>
-        `;
-      }).join('');
-    }
-  }
-
-  function formatDurationShort(totalSec) {
-    if (!totalSec || totalSec <= 0) return '0m';
-    const hrs = Math.floor(totalSec / 3600);
-    const mins = Math.round((totalSec % 3600) / 60);
-    if (hrs > 0) {
-      return `${hrs}h ${mins}m`;
-    }
-    return `${mins}m`;
-  }
-
-  // Update UI state for Mode change
-  function updateUIForMode(mode) {
-    if (mode === 'timer') {
-      modeLeverTrack.classList.remove('stopwatch-active');
-      timerLabel.classList.add('active');
-      stopwatchLabel.classList.remove('active');
-      modeSubtext.textContent = 'SET TIMER';
-      modeSubtext.classList.remove('time-over');
-      dialSection.style.display = 'flex';
-      dial.setDisabled(timerEngine.state !== 'stopped');
-    } else {
-      // Stopwatch mode
-      modeLeverTrack.classList.add('stopwatch-active');
-      stopwatchLabel.classList.add('active');
-      timerLabel.classList.remove('active');
-      modeSubtext.textContent = 'STOPWATCH';
-      modeSubtext.classList.remove('time-over');
-      dialSection.style.display = 'none'; // hidden in stopwatch mode
-    }
-  }
-
-  // Update Controls state (Start / Pause / Resume / Reset / Restart)
-  function updateControlsForState(state) {
-    if (state === 'stopped') {
-      startBtnText.textContent = 'START';
-      dial.setDisabled(false);
-
-      if (timerEngine.isCompleted) {
-        // Timer completed state: remove Reset button, show Restart Same button
-        resetBtn.classList.add('hidden');
-        restartSameBtn.classList.remove('hidden');
-      } else {
-        // Normal stopped state: show Reset button, hide Restart Same button
-        resetBtn.classList.remove('hidden');
-        restartSameBtn.classList.add('hidden');
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
       }
-    } else if (state === 'running') {
-      startBtnText.textContent = 'PAUSE';
-      dial.setDisabled(true);
-      resetBtn.classList.remove('hidden');
-      restartSameBtn.classList.add('hidden');
+    }
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      fullscreenIcon.innerHTML = `
+        <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+      `;
+    } else {
+      fullscreenIcon.innerHTML = `
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+      `;
+    }
+  });
+
+  function updateControls(state) {
+    if (state === 'running') {
+      startBtn.textContent = 'PAUSE';
+      startBtn.className = 'btn secondary-btn';
     } else if (state === 'paused') {
-      startBtnText.textContent = 'RESUME';
-      dial.setDisabled(true);
-      resetBtn.classList.remove('hidden');
-      restartSameBtn.classList.add('hidden');
-    }
-  }
-
-  // Update Main Digital Readout & Ring Progress
-  function updateDisplay(displaySeconds, mode, progress, isCompleted) {
-    timeDisplay.textContent = timerEngine.formatTime(displaySeconds);
-
-    if (isCompleted) {
-      modeSubtext.textContent = 'TIME IS UP!';
-      modeSubtext.classList.add('time-over');
+      startBtn.textContent = 'RESUME';
+      startBtn.className = 'btn primary-btn';
     } else {
-      modeSubtext.classList.remove('time-over');
-      if (mode === 'timer') {
-        if (timerEngine.state === 'running') {
-          modeSubtext.textContent = 'COUNTING DOWN';
-        } else if (timerEngine.state === 'paused') {
-          modeSubtext.textContent = 'PAUSED';
-        } else {
-          modeSubtext.textContent = 'SET TIMER';
-        }
-      } else {
-        modeSubtext.textContent = 'STOPWATCH';
-      }
+      // stopped
+      startBtn.textContent = 'START';
+      startBtn.className = 'btn primary-btn';
     }
-
-    // SVG stroke offset
-    const offset = RING_CIRCUMFERENCE * (1 - progress);
-    ringProgress.style.strokeDashoffset = offset;
   }
 
   // PWA Service Worker Registration
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('PWA ServiceWorker registered:', reg.scope))
-        .catch(err => console.log('PWA ServiceWorker registration failed:', err));
+        .then(reg => console.log('SW registered:', reg.scope))
+        .catch(err => console.log('SW failed:', err));
     });
   }
 });
