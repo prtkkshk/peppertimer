@@ -1,6 +1,6 @@
 // Minimal Stopwatch Service Worker
 
-const CACHE_NAME = 'minimal-stopwatch-v2';
+const CACHE_NAME = 'minimal-stopwatch-v3';
 const ASSETS = [
   '/',
   '/index.html',

@@ -1,6 +1,16 @@
 // Minimalist Stopwatch Main Client Application
 import { StopwatchEngine } from './stopwatch.js';
-import { saveRun, getRuns, clearRuns, getSummaryStats, get7DayChartData } from './storage.js';
+import {
+  saveRun,
+  saveOrUpdateRun,
+  getRuns,
+  clearRuns,
+  getSummaryStats,
+  get7DayChartData,
+  getActiveSession,
+  setActiveSession,
+  clearActiveSession
+} from './storage.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements - Timer & Header Controls
@@ -26,6 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const chartMaxLabel = document.getElementById('chart-max-label');
   const runsList = document.getElementById('runs-list');
 
+  let autoLoggedRunId = null;
+
   // Initialize Stopwatch Engine
   const stopwatch = new StopwatchEngine({
     onTick: ({ formatted, state }) => {
@@ -34,8 +46,56 @@ document.addEventListener('DOMContentLoaded', () => {
     },
     onStateChange: (state) => {
       updateControls(state);
+      if (state === 'paused' && stopwatch.elapsedMs >= 1000) {
+        const savedRun = saveOrUpdateRun(stopwatch.elapsedMs, autoLoggedRunId);
+        if (savedRun) {
+          autoLoggedRunId = savedRun.id;
+          setActiveSession({
+            elapsedMs: stopwatch.elapsedMs,
+            autoLoggedRunId: autoLoggedRunId,
+            timestamp: Date.now()
+          });
+        }
+      } else if (state === 'stopped') {
+        autoLoggedRunId = null;
+        clearActiveSession();
+      }
     }
   });
+
+  // Check for restored active session
+  const activeSession = getActiveSession();
+  if (activeSession && activeSession.elapsedMs >= 1000) {
+    autoLoggedRunId = activeSession.autoLoggedRunId || null;
+    stopwatch.restoreState(activeSession.elapsedMs, 'paused');
+  }
+
+  // Auto-log & persist session when app is cut, backgrounded, or closed midway
+  function handleAppCutOrBackground() {
+    if (stopwatch.elapsedMs >= 1000 && stopwatch.state !== 'stopped') {
+      if (stopwatch.state === 'running') {
+        stopwatch.pause();
+      }
+      const savedRun = saveOrUpdateRun(stopwatch.elapsedMs, autoLoggedRunId);
+      if (savedRun) {
+        autoLoggedRunId = savedRun.id;
+        setActiveSession({
+          elapsedMs: stopwatch.elapsedMs,
+          autoLoggedRunId: autoLoggedRunId,
+          timestamp: Date.now()
+        });
+      }
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      handleAppCutOrBackground();
+    }
+  });
+
+  window.addEventListener('pagehide', handleAppCutOrBackground);
+  window.addEventListener('beforeunload', handleAppCutOrBackground);
 
   // Start / Pause / Resume Button
   startBtn.addEventListener('click', () => {
@@ -48,12 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Reset Button — Save run if duration >= 1 second
+  // Reset Button — Save run if duration >= 1 second and clear session
   resetBtn.addEventListener('click', () => {
     const durationMs = stopwatch.elapsedMs;
     if (durationMs >= 1000) {
-      saveRun(durationMs);
+      saveOrUpdateRun(durationMs, autoLoggedRunId);
     }
+    autoLoggedRunId = null;
+    clearActiveSession();
     stopwatch.reset();
   });
 
@@ -115,6 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
   clearHistoryBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear all session history?')) {
       clearRuns();
+      autoLoggedRunId = null;
+      clearActiveSession();
+      stopwatch.reset();
       renderProgressData();
     }
   });

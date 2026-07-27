@@ -67,6 +67,23 @@ export class StopwatchEngine {
     }
   }
 
+  restoreState(elapsedMs, state = 'paused') {
+    this.state = state;
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+    this.elapsedMs = elapsedMs;
+    this.startTime = performance.now() - this.elapsedMs;
+    this.releaseWakeLock();
+    this.notifyTick();
+    this.updateTitle();
+
+    if (this.callbacks.onStateChange) {
+      this.callbacks.onStateChange(this.state);
+    }
+  }
+
   tick() {
     this.elapsedMs = performance.now() - this.startTime;
     this.notifyTick();

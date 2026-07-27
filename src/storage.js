@@ -2,6 +2,7 @@
 // Saves sessions in localStorage and generates daily statistics & chart data
 
 const STORAGE_KEY = 'pepper_timer_runs';
+const ACTIVE_SESSION_KEY = 'pepper_timer_active_session';
 
 export function getRuns() {
   try {
@@ -14,44 +15,93 @@ export function getRuns() {
 }
 
 export function saveRun(durationMs) {
+  return saveOrUpdateRun(durationMs, null);
+}
+
+export function saveOrUpdateRun(durationMs, existingRunId = null) {
   if (!durationMs || durationMs < 1000) return null; // Ignore runs shorter than 1 second
 
   const runs = getRuns();
   const now = new Date();
-  
-  // Format date as YYYY-MM-DD in local time
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const dateStr = `${year}-${month}-${day}`;
 
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const timeOfDayStr = `${hours}:${minutes}`;
-
-  const newRun = {
-    id: 'run_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
-    timestamp: now.getTime(),
-    dateStr: dateStr,
-    timeOfDay: timeOfDayStr,
-    durationMs: durationMs,
-    formattedDuration: formatMs(durationMs)
-  };
-
-  runs.unshift(newRun); // Newest first
-  
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
-  } catch (e) {
-    console.error('Failed to save run to localStorage', e);
+  let runIndex = -1;
+  if (existingRunId) {
+    runIndex = runs.findIndex(r => r.id === existingRunId);
   }
 
-  return newRun;
+  if (runIndex !== -1) {
+    // Update existing run duration and formatted duration
+    runs[runIndex].durationMs = durationMs;
+    runs[runIndex].formattedDuration = formatMs(durationMs);
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
+    } catch (e) {
+      console.error('Failed to update run in localStorage', e);
+    }
+    return runs[runIndex];
+  } else {
+    // Format date as YYYY-MM-DD in local time
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const timeOfDayStr = `${hours}:${minutes}`;
+
+    const newRun = {
+      id: existingRunId || ('run_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7)),
+      timestamp: now.getTime(),
+      dateStr: dateStr,
+      timeOfDay: timeOfDayStr,
+      durationMs: durationMs,
+      formattedDuration: formatMs(durationMs)
+    };
+
+    runs.unshift(newRun); // Newest first
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
+    } catch (e) {
+      console.error('Failed to save run to localStorage', e);
+    }
+
+    return newRun;
+  }
+}
+
+export function getActiveSession() {
+  try {
+    const data = localStorage.getItem(ACTIVE_SESSION_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (e) {
+    console.error('Failed to read active session from localStorage', e);
+    return null;
+  }
+}
+
+export function setActiveSession(sessionData) {
+  try {
+    if (!sessionData) {
+      localStorage.removeItem(ACTIVE_SESSION_KEY);
+    } else {
+      localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(sessionData));
+    }
+  } catch (e) {
+    console.error('Failed to save active session to localStorage', e);
+  }
+}
+
+export function clearActiveSession() {
+  setActiveSession(null);
 }
 
 export function clearRuns() {
   try {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(ACTIVE_SESSION_KEY);
   } catch (e) {
     console.error('Failed to clear runs from localStorage', e);
   }
